@@ -2,8 +2,10 @@ package br.com.zenon;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.IO.println;
+import static java.lang.System.out;
 
 public class Main {
 
@@ -28,15 +30,36 @@ public class Main {
         List<Transaction> transactions =  ingestor.read("data/PS_20174392719_1491204439457_log.csv");
 
         println(transactions.size());
-        transactions.stream().limit(10).forEach(System.out::println);
+        transactions.stream().limit(10).forEach(out::println);
 
         println("----------------------------------------------------------------------------------------------------");
 
 
         List<Transaction> transactionsBadData = ingestor.read("data/paysim_with_bad_data.csv");
-        println(transactionsBadData.size());
+        println("Bad Data Size: " + transactionsBadData.size());
 
         transactionsBadData.forEach(IO::println);
+
+
+        println("----------------------------------------------------------------------------------------------------");
+
+        var fraudAnalyzer = new FraudAnalyzer(transactions);
+        println("Total de Fraudes: " + fraudAnalyzer.countFraud());
+
+        println("As maiores fraudes foram:");
+        fraudAnalyzer.findTopFrauds(3).stream().map(Transaction::amount).forEach(IO::println);
+
+        var suspectCustomers = fraudAnalyzer.findTopSuspectCustomers(5);
+        println("Top 5 clientes suspeitos");
+        suspectCustomers.forEach(IO::println);
+
+        //Calcule o prejuízo total causado pelas fraudes (soma dos amount).
+        BigDecimal calculateTotalLoss = fraudAnalyzer.calculateTotalLoss();
+        println("Prejuízo total: " + calculateTotalLoss);
+
+        // Conte quantas fraudes ocorreram por tipo de transação (CASH_OUT, TRANSFER, etc...).
+        Map<TransactionType, Long> transactionTypeLongMap = fraudAnalyzer.countFraudByType();
+        transactionTypeLongMap.forEach((type, count) -> println(type + ": " + count));
 
     }
 }

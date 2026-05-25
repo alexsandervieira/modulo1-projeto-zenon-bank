@@ -6,10 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public class TransactionIngestor {
+
+    private static final int LIMIT = 50_000;
 
     public List<Transaction> read(String filename) {
 
@@ -19,7 +20,7 @@ public class TransactionIngestor {
 
             return Files.readAllLines(path).stream()
                     .skip(1)
-                    .limit(1000)
+                    .limit(LIMIT)
                     .map(this::parseTransaction)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
