@@ -30,6 +30,13 @@ public class Main {
         println(transactions.size());
         transactions.stream().limit(10).forEach(System.out::println);
 
+        println("----------------------------------------------------------------------------------------------------");
+
+
+        List<Transaction> transactionsBadData = ingestor.read("data/paysim_with_bad_data.csv");
+        println(transactionsBadData.size());
+
+        transactionsBadData.forEach(IO::println);
 
     }
 }
