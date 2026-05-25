@@ -3,6 +3,7 @@ package br.com.zenon;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.IO.println;
 import static java.lang.System.out;
@@ -60,6 +61,41 @@ public class Main {
         // Conte quantas fraudes ocorreram por tipo de transação (CASH_OUT, TRANSFER, etc...).
         Map<TransactionType, Long> transactionTypeLongMap = fraudAnalyzer.countFraudByType();
         transactionTypeLongMap.forEach((type, count) -> println(type + ": " + count));
+
+
+
+        println("----------------------------------------------------------------------------------------------------");
+
+        TransactionRepository repository;
+
+        repository = new TransactionListRepository(transactions);
+        //String existsOriginName = "C1231006815";
+        String notFound = "C12345";
+
+        String ultimoOriginName = "C1868032458";
+
+        long startTime = System.nanoTime();
+
+                repository
+                .findByOriginName(ultimoOriginName)
+                .ifPresentOrElse(IO::println, () -> IO.println("Transaction not found " + notFound));
+
+        long endTime = System.nanoTime();
+
+        println("Tempo de execução List - (ms): " + (endTime - startTime) / 1_000_000.0);
+
+
+        repository = new TransactionMapRepository(transactions);
+
+        long startTimeMap = System.nanoTime();
+
+        repository
+                .findByOriginName(ultimoOriginName)
+                .ifPresentOrElse(IO::println, () -> out.println("Transaction not found " + notFound));
+
+        long endTimeMap = System.nanoTime();
+
+        println("Tempo de execução Map- (ms): " + (endTimeMap - startTimeMap) / 1_000_000.0);
 
     }
 }
